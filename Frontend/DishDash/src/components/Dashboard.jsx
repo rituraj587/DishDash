@@ -1,16 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { io } from 'socket.io-client';
 import './Dashboard.css';
-// import 'bootstrap/dist/css/bootstrap.min.css';
-
-
-
 
 const Dashboard = () => {
   const [dishes, setDishes] = useState([]);
+  const socket = io('http://localhost:3000');
 
   useEffect(() => {
     fetchDishes();
+
+    socket.on('update', (updatedDish) => {
+      setDishes((prevDishes) =>
+        prevDishes.map((dish) => (dish.dishId === updatedDish.dishId ? updatedDish : dish))
+      );
+    });
+
+    return () => {
+      socket.off('update');
+    };
   }, []);
 
   const fetchDishes = async () => {
