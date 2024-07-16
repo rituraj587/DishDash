@@ -2,11 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
-const socketIo = require('socket.io');
+const { Server } = require('socket.io');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 
 let sample = [
   {
@@ -41,7 +42,7 @@ let sample = [
   }
 ];
 
-mongoose.connect('mongodb://localhost:27017/dishes',);
+mongoose.connect('mongodb://localhost:27017/dishes');
 
 const dishSchema = new mongoose.Schema({
   dishId: String,
@@ -53,7 +54,12 @@ const dishSchema = new mongoose.Schema({
 const Dish = mongoose.model('Dish', dishSchema);
 
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:5173', // Replace with your frontend URL
+    methods: ['GET', 'POST']
+  }
+});
 
 io.on('connection', (socket) => {
   console.log('New client connected');
