@@ -1,0 +1,4 @@
+.img-fit{
+    object-fit: cover;
+    height: 200px;
+}
